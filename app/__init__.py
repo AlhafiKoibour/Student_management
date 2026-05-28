@@ -46,6 +46,35 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
+    # Ensure default admin user exists
+    with app.app_context():
+        from app.models import User
+
+        default_admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@management.com')
+        default_admin_username = os.getenv('DEFAULT_ADMIN_USERNAME', 'admin')
+        default_admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'AdminPassword123!')
+
+        db.create_all()
+
+        admin_user = User.query.filter_by(email=default_admin_email).first()
+        if admin_user is None:
+            admin_user = User(
+                username=default_admin_username,
+                email=default_admin_email,
+                role='admin',
+                is_active=True
+            )
+            admin_user.set_password(default_admin_password)
+            db.session.add(admin_user)
+            db.session.commit()
+            app.logger.info(f"Default admin account created: {default_admin_email}")
+        else:
+            if admin_user.role != 'admin' or not admin_user.is_active:
+                admin_user.role = 'admin'
+                admin_user.is_active = True
+                db.session.commit()
+                app.logger.info(f"Default admin account updated to admin: {default_admin_email}")
+
     # Configuration des logs de sécurité
     import logging
     from logging.handlers import RotatingFileHandler
