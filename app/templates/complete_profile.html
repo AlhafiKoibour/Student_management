@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Profile - StudSecure{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-md-7 col-lg-6 my-5">
+        <div class="card-glass">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-badge-fill text-info" style="font-size: 2.5rem; filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));"></i>
+                <h3 class="card-glass-title mt-3">Complete Your Profile</h3>
+                <p class="text-secondary small">Please provide your required student information.</p>
+            </div>
+
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                
+                <!-- Matricule Field -->
+                <div class="mb-3">
+                    {{ form.matricule.label(class="form-label-custom") }}
+                    {{ form.matricule(class="form-control form-control-custom" + (" is-invalid" if form.matricule.errors else ""), placeholder="Ex: MAT-2026-0001") }}
+                    {% for error in form.matricule.errors %}
+                        <div class="invalid-feedback d-block mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Nom Field -->
+                <div class="mb-3">
+                    {{ form.nom.label(class="form-label-custom") }}
+                    {{ form.nom(class="form-control form-control-custom" + (" is-invalid" if form.nom.errors else ""), placeholder="Ex: Dupont") }}
+                    {% for error in form.nom.errors %}
+                        <div class="invalid-feedback d-block mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Prenom Field -->
+                <div class="mb-3">
+                    {{ form.prenom.label(class="form-label-custom") }}
+                    {{ form.prenom(class="form-control form-control-custom" + (" is-invalid" if form.prenom.errors else ""), placeholder="Ex: Jean") }}
+                    {% for error in form.prenom.errors %}
+                        <div class="invalid-feedback d-block mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Filiere Field -->
+                <div class="mb-3">
+                    {{ form.filiere.label(class="form-label-custom") }}
+                    {{ form.filiere(class="form-control form-control-custom" + (" is-invalid" if form.filiere.errors else ""), placeholder="Ex: Informatique de Gestion, Génie Logiciel") }}
+                    {% for error in form.filiere.errors %}
+                        <div class="invalid-feedback d-block mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Boursier Radio Buttons -->
+                <div class="mb-4">
+                    {{ form.est_boursier.label(class="form-label-custom") }}
+                    <div class="custom-radio-group">
+                        {% for subfield in form.est_boursier %}
+                            <div class="custom-radio-item">
+                                {{ subfield }}
+                                <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% for error in form.est_boursier.errors %}
+                        <div class="invalid-feedback d-block mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid mb-2">
+                    {{ form.submit(class="btn btn-accent-custom py-2 fw-bold") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

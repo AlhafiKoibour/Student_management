@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Area - StudSecure{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-1" style="font-weight: 800; letter-spacing: -0.5px;">Administration Area</h2>
+            <p class="text-secondary">Manage student accounts, monitor profiles, and audit security actions.</p>
+        </div>
+    </div>
+
+<!-- Cartes des Statistiques -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div>
+                <p class="stat-num">{{ total_students }}</p>
+                <p class="stat-label">Students</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="bi bi-award-fill"></i>
+            </div>
+            <div>
+                <p class="stat-num">{{ total_boursiers }}</p>
+                <p class="stat-label">Scholarship Students</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon accent">
+                <i class="bi bi-percent"></i>
+            </div>
+            <div>
+                <p class="stat-num">{{ completion_rate }}%</p>
+                <p class="stat-label">Completion Rate</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon danger">
+                <i class="bi bi-person-x-fill"></i>
+            </div>
+            <div>
+                <p class="stat-num">{{ blocked_students }}</p>
+                <p class="stat-label">Blocked Accounts</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des comptes étudiants -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card-glass">
+            <div class="action-bar">
+                <h4 class="card-glass-title mb-0"><i class="bi bi-journal-text me-2 text-info"></i>Student List</h4>
+                <div class="d-flex gap-3 flex-grow-1 justify-content-md-end max-width-md-600 align-items-center">
+                    <div class="search-input-group">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="student-search" class="form-control form-control-custom" placeholder="Search student...">
+                    </div>
+                    <button class="btn btn-accent-custom" onclick="openModal('add-student-modal')">
+                        <i class="bi bi-person-plus-fill me-1"></i> Add Student
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Student Number</th>
+                            <th>Last Name</th>
+                            <th>First Name</th>
+                            <th>Program</th>
+                            <th>Scholarship</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-table-body">
+                        {% for s in students %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ s.email }}</div>
+                                    <div class="text-muted small">ID: {{ s.id }}</div>
+                                </td>
+                                <td>
+                                    {% if s.student_profile %}
+                                        <span class="text-info fw-bold">{{ s.student_profile.matricule }}</span>
+                                    {% else %}
+                                        <span class="text-muted small">Non renseigné</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if s.student_profile %}
+                                        <span>{{ s.student_profile.nom }}</span>
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if s.student_profile %}
+                                        <span>{{ s.student_profile.prenom }}</span>
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if s.student_profile %}
+                                        <span>{{ s.student_profile.filiere }}</span>
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if s.student_profile %}
+                                        {% if s.student_profile.est_boursier %}
+                                            <span class="badge-custom badge-success">Boursier</span>
+                                        {% else %}
+                                            <span class="badge-custom badge-warning">Non boursier</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if s.is_active %}
+                                        <span class="badge-custom badge-success"><i class="bi bi-check-circle"></i> Active</span>
+                                    {% else %}
+                                        <span class="badge-custom badge-danger"><i class="bi bi-slash-circle"></i> Blocked</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2">
+                                        <!-- Modifier -->
+                                        <button class="btn btn-outline-custom btn-sm py-1 px-2 border-0 text-info" title="Modifier l'étudiant" onclick="openEditStudentModal({{ s.id }})">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </button>
+                                        <!-- Réinitialiser Password -->
+                                        <button class="btn btn-outline-custom btn-sm py-1 px-2 border-0 text-warning" title="Reset password" onclick="openResetPwdModal({{ s.id }}, '{{ s.email }}')">
+                                            <i class="bi bi-key-fill fs-5"></i>
+                                        </button>
+                                        <!-- Supprimer -->
+                                        <form action="{{ url_for('admin.delete_student', user_id=s.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this student and all their data?');" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-outline-custom btn-sm py-1 px-2 border-0 text-danger" title="Supprimer l'étudiant">
+                                                <i class="bi bi-trash-fill fs-5"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-secondary">
+                                    <i class="bi bi-inbox-fill d-block fs-2 mb-2"></i> No students registered.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logs de sécurité récents -->
+<div class="row">
+    <div class="col-12">
+        <div class="card-glass">
+            <h4 class="card-glass-title"><i class="bi bi-shield-exclamation me-2 text-danger"></i>Security Audit (Last 10 logs)</h4>
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Action</th>
+                            <th>IP Address</th>
+                            <th>User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in security_logs %}
+                            <tr>
+                                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td>
+                                    <span class="text-white">{{ log.action }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge-custom badge-warning">{{ log.ip_address }}</span>
+                                </td>
+                                <td>
+                                    {% if log.user %}
+                                        <span class="text-secondary">{{ log.user.email }}</span>
+                                    {% else %}
+                                        <span class="text-muted small">System / Anonymous</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-secondary">No security logs available.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- Modal: Add Student -->
+<div id="add-student-modal" class="custom-modal-overlay" style="display:none;">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h5><i class="bi bi-person-plus-fill me-2 text-info"></i>Add Student</h5>
+            <button class="btn-close-modal" onclick="closeModal('add-student-modal')">&times;</button>
+        </div>
+        <form method="POST" action="{{ url_for('admin.add_student') }}">
+            {{ form_add.hidden_tag() }}
+            <div class="custom-modal-body">
+                <div class="mb-3">
+                    {{ form_add.email.label(class="form-label-custom") }}
+                    {{ form_add.email(class="form-control form-control-custom", placeholder="Ex: student@univ.edu") }}
+                </div>
+                <div class="mb-3">
+                    {{ form_add.password.label(class="form-label-custom") }}
+                    {{ form_add.password(class="form-control form-control-custom", placeholder="••••••••") }}
+                    <small class="text-muted small">Must comply with the password complexity policy.</small>
+                </div>
+                <div class="mb-3">
+                    {{ form_add.matricule.label(class="form-label-custom") }}
+                    {{ form_add.matricule(class="form-control form-control-custom", placeholder="Ex: MAT-2026-9999") }}
+                </div>
+                <div class="mb-3">
+                    {{ form_add.filiere.label(class="form-label-custom") }}
+                    {{ form_add.filiere(class="form-control form-control-custom", placeholder="Ex: Business Finance") }}
+                </div>
+                 <div class="mb-3">
+                    {{ form_add.nom.label(class="form-label-custom") }}
+                    {{ form_add.nom(class="form-control form-control-custom", placeholder="Ex: Smith") }}
+                </div>
+                 <div class="mb-3">
+                    {{ form_add.prenom.label(class="form-label-custom") }}
+                    {{ form_add.prenom(class="form-control form-control-custom", placeholder="Ex: John") }}
+                </div>
+                <div class="mb-2">
+                    {{ form_add.est_boursier.label(class="form-label-custom") }}
+                    <div class="custom-radio-group">
+                        {% for subfield in form_add.est_boursier %}
+                            <div class="custom-radio-item">
+                                {{ subfield }}
+                                <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn btn-outline-custom" onclick="closeModal('add-student-modal')">Cancel</button>
+                {{ form_add.submit(class="btn btn-accent-custom py-2 px-3 fw-bold") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Edit Student -->
+<div id="edit-student-modal" class="custom-modal-overlay" style="display:none;">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h5><i class="bi bi-pencil-square me-2 text-info"></i>Edit Student</h5>
+            <button class="btn-close-modal" onclick="closeModal('edit-student-modal')">&times;</button>
+        </div>
+        <form id="edit-student-form" method="POST" action="">
+            {{ form_edit.hidden_tag() }}
+            <div class="custom-modal-body">
+                <div class="mb-3">
+                    {{ form_edit.email.label(class="form-label-custom") }}
+                    {{ form_edit.email(class="form-control form-control-custom", id="edit-email") }}
+                </div>
+                <div class="mb-3">
+                    {{ form_edit.matricule.label(class="form-label-custom") }}
+                    {{ form_edit.matricule(class="form-control form-control-custom", id="edit-matricule") }}
+                </div>
+                <div class="mb-3">
+                    {{ form_edit.nom.label(class="form-label-custom") }}
+                    {{ form_edit.nom(class="form-control form-control-custom", id="edit-nom") }}
+                </div>
+                <div class="mb-3">
+                    {{ form_edit.prenom.label(class="form-label-custom") }}
+                    {{ form_edit.prenom(class="form-control form-control-custom", id="edit-prenom") }}
+                </div>
+                <div class="mb-3">
+                    {{ form_edit.filiere.label(class="form-label-custom") }}
+                    {{ form_edit.filiere(class="form-control form-control-custom", id="edit-filiere") }}
+                </div>
+                <div class="mb-3">
+                    {{ form_edit.est_boursier.label(class="form-label-custom") }}
+                    <div class="custom-radio-group">
+                        {% for subfield in form_edit.est_boursier %}
+                            <div class="custom-radio-item">
+                                {{ subfield(id=subfield.id ~ "_edit") }}
+                                <label for="{{ subfield.id }}_edit">{{ subfield.label.text }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="mb-2">
+                    {{ form_edit.is_active.label(class="form-label-custom") }}
+                    <div class="custom-radio-group">
+                        {% for subfield in form_edit.is_active %}
+                            <div class="custom-radio-item">
+                                {{ subfield(id=subfield.id ~ "_edit") }}
+                                <label for="{{ subfield.id }}_edit">{{ subfield.label.text }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn btn-outline-custom" onclick="closeModal('edit-student-modal')">Cancel</button>
+                {{ form_edit.submit(class="btn btn-accent-custom py-2 px-3 fw-bold") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Reset Password -->
+<div id="reset-pwd-modal" class="custom-modal-overlay" style="display:none;">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h5><i class="bi bi-key-fill me-2 text-warning"></i>Reset Password</h5>
+            <button class="btn-close-modal" onclick="closeModal('reset-pwd-modal')">&times;</button>
+        </div>
+        <form id="reset-pwd-form" method="POST" action="">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="custom-modal-body">
+                <p class="text-secondary small mb-3">
+                    Enter the new password for the account: <span id="reset-student-email" class="fw-bold text-white"></span>
+                </p>
+                <div class="mb-2">
+                    <label for="new_password" class="form-label-custom">New Password</label>
+                    <input type="password" id="new_password" name="new_password" class="form-control form-control-custom" placeholder="Min. 8 complex characters..." required>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn btn-outline-custom" onclick="closeModal('reset-pwd-modal')">Cancel</button>
+                <button type="submit" class="btn btn-accent-custom py-2 px-3 fw-bold">Update Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

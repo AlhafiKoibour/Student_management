@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Home - StudSecure{% endblock %}
+
+{% block content %}
+<div class="row align-items-center justify-content-center min-vh-75">
+    <div class="col-lg-8 text-center my-5">
+        <div class="card-glass p-5">
+            <div class="mb-4">
+                <i class="bi bi-shield-lock-fill text-info" style="font-size: 4rem; filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.4));"></i>
+            </div>
+            <h1 class="display-4 font-weight-bold mb-3" style="letter-spacing: -1px; font-weight: 800; color: #0f172a;">
+                Welcome to <span style="color: var(--primary);">StudSecure</span>
+            </h1>
+            <p class="lead mb-5" style="max-width: 600px; margin: 0 auto; font-size: 1.15rem; color: #0f172a;">
+                A modern, highly secure platform for student profile management and administrative tracking.
+            </p>
+            
+            <div class="d-flex justify-content-center gap-3 flex-wrap mb-5">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-accent-custom px-5 py-3">
+                            <i class="bi bi-speedometer2 me-2"></i>Go to Admin Panel
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-accent-custom px-5 py-3">
+                            <i class="bi bi-grid-1x2-fill me-2"></i>My Dashboard
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-accent-custom px-5 py-3">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-custom px-5 py-3">
+                        <i class="bi bi-person-plus me-2"></i>Create Account
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

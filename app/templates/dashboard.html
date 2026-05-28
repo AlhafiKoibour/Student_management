@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - StudSecure{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card-glass p-4" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(0, 229, 255, 0.05)); border-color: rgba(99, 102, 241, 0.2);">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h2 class="mb-1" style="font-weight: 800; letter-spacing: -0.5px;">Hello, <span class="text-info">{{ user.email }}</span>!</h2>
+                    <p class="mb-0 text-white">Welcome to your secure student portal.</p>
+                </div>
+                <div>
+                    <span class="badge-custom badge-success">
+                        <i class="bi bi-shield-fill-check"></i> Secure Session Active
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Student Profile -->
+    <div class="">
+        <div class="card-glass h-100">
+            <h4 class="card-glass-title"><i class="bi bi-person-lines-fill me-2 text-info"></i>Profile Details</h4>
+            <div class="table-responsive mt-3">
+                <table class="table table-borderless text-white">
+                    <tbody>
+                        <tr class="border-bottom border-secondary border-opacity-10">
+                            <td class="text-secondary py-3">Email Address</td>
+                            <td class="text-end py-3 fw-medium">{{ user.email }}</td>
+                        </tr>
+                        <tr class="border-bottom border-secondary border-opacity-10">
+                            <td class="text-secondary py-3">Student Number</td>
+                            <td class="text-end py-3 fw-bold text-info">{{ profile.matricule }}</td>
+                        </tr>
+                        <tr class="border-bottom border-secondary border-opacity-10">
+                            <td class="text-secondary py-3">Last Name</td>
+                            <td class="text-end py-3 fw-medium">{{ profile.nom }}</td>
+                        </tr>
+                        <tr class="border-bottom border-secondary border-opacity-10">
+                            <td class="text-secondary py-3">First Name</td>
+                            <td class="text-end py-3 fw-medium">{{ profile.prenom }}</td>
+                        </tr>
+                        <tr class="border-bottom border-secondary border-opacity-10">
+                            <td class="text-secondary py-3">Program</td>
+                            <td class="text-end py-3 fw-medium">{{ profile.filiere }}</td>
+                        </tr>
+                        <tr class="border-bottom border-secondary border-opacity-10">
+                            <td class="text-secondary py-3">Scholarship Status</td>
+                            <td class="text-end py-3">
+                                {% if profile.est_boursier %}
+                                    <span class="badge-custom badge-success"><i class="bi bi-award-fill"></i> Scholarship</span>
+                                {% else %}
+                                    <span class="badge-custom badge-warning"><i class="bi bi-cash-stack"></i> No Scholarship</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary py-3">Account created on</td>
+                            <td class="text-end py-3 text-secondary">{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else '—' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
