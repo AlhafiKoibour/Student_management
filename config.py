@@ -7,7 +7,7 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'default-super-secret-key-12345')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql://postgres17:E04zTOGnvW0ISQpMtPVIBpgDPRuUKDhr@dpg-d8c6dm7avr4c73eh7q10-a/student_db_dp9z')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql+pg8000://postgres17:E04zTOGnvW0ISQpMtPVIBpgDPRuUKDhr@dpg-d8c6dm7avr4c73eh7q10-a/student_db_dp9z')
    # SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql+pg8000://postgres:evrad@localhost:5432/student_db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
