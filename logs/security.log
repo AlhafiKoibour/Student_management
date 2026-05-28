@@ -42,3 +42,8 @@
 2026-05-28 10:58:28,759 INFO: Démarrage de l'application de gestion des étudiants [in c:\Users\GENERAL STORE\Desktop\Student_management\app\__init__.py:63]
 2026-05-28 10:59:00,933 INFO: Démarrage de l'application de gestion des étudiants [in c:\Users\GENERAL STORE\Desktop\Student_management\app\__init__.py:63]
 2026-05-28 10:59:22,471 INFO: Démarrage de l'application de gestion des étudiants [in c:\Users\GENERAL STORE\Desktop\Student_management\app\__init__.py:63]
+2026-05-28 11:00:04,144 INFO: Démarrage de l'application de gestion des étudiants [in c:\Users\GENERAL STORE\Desktop\Student_management\app\__init__.py:63]
+2026-05-28 11:00:39,540 WARNING: SECURITY EVENT - User ID: 6 - Action: User logged out - IP: 127.0.0.1 [in c:\Users\GENERAL STORE\Desktop\Student_management\app\utils.py:65]
+2026-05-28 11:01:27,081 WARNING: SECURITY EVENT - User ID: 1 - Action: Connexion réussie - IP: 127.0.0.1 [in c:\Users\GENERAL STORE\Desktop\Student_management\app\utils.py:65]
+2026-05-28 14:02:06,613 INFO: Démarrage de l'application de gestion des étudiants [in c:\Users\GENERAL STORE\Desktop\Student_management\app\__init__.py:63]
+2026-05-28 14:02:27,025 INFO: Démarrage de l'application de gestion des étudiants [in c:\Users\GENERAL STORE\Desktop\Student_management\app\__init__.py:63]
